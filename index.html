@@ -1,77 +1,63 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Каталог саженцев</title>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8">
+<title>Каталог</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-badge">🌿</div>
-        <div>
-          <h1>Каталог саженцев</h1>
-          <p>Офлайн-версия для точки продаж</p>
-        </div>
-      </div>
 
-      <div class="panel">
-        <label for="search">Поиск</label>
-        <input id="search" type="search" placeholder="Например, абрикос" />
-      </div>
+<div class="sidebar" id="categories"></div>
+<div class="content">
+  <input type="text" id="search" placeholder="Поиск...">
+  <div id="products"></div>
+</div>
 
-      <div class="panel">
-        <div class="panel-title">Разделы</div>
-        <div id="category-list" class="category-list"></div>
-      </div>
-
-      <div class="panel stats">
-        <div><strong id="total-products">0</strong><span>товаров</span></div>
-        <div><strong id="visible-products">0</strong><span>показано</span></div>
-      </div>
-    </aside>
-
-    <main class="content">
-      <header class="topbar">
-        <div>
-          <h2 id="current-title">Все товары</h2>
-          <p id="current-subtitle">Локальный каталог без интернета</p>
-        </div>
-        <button id="reset-filters" class="secondary-btn">Сбросить фильтры</button>
-      </header>
-
-      <section id="product-grid" class="product-grid"></section>
-    </main>
+<div id="modal" class="modal hidden">
+  <div class="modal-content">
+    <span onclick="closeModal()">✖</span>
+    <h2 id="modal-title"></h2>
+    <img id="modal-img">
+    <p id="modal-desc"></p>
+    <button onclick="exportPDF()">Экспорт в PDF</button>
   </div>
+</div>
 
-  <dialog id="product-modal" class="product-modal">
-    <button id="close-modal" class="close-modal" aria-label="Закрыть">×</button>
-    <div id="modal-body"></div>
-  </dialog>
+<script src="data.js"></script>
+<script>
+let currentProduct = null;
 
-  <template id="card-template">
-    <article class="card">
-      <div class="card-image-wrap">
-        <img class="card-image" alt="" loading="lazy" />
-      </div>
-      <div class="card-body">
-        <div class="card-meta">
-          <span class="chip chip-green"></span>
-          <span class="chip"></span>
-        </div>
-        <h3 class="card-title"></h3>
-        <p class="card-desc"></p>
-        <div class="card-footer">
-          <div class="price"></div>
-          <button class="primary-btn">Открыть</button>
-        </div>
-      </div>
-    </article>
-  </template>
+function render() {
+  const list = document.getElementById('products');
+  list.innerHTML = '';
 
-  <script src="data.js"></script>
-  <script src="app.js"></script>
+  data.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `<h3>${p.name}</h3>`;
+    div.onclick = () => openModal(p);
+    list.appendChild(div);
+  });
+}
+
+function openModal(p) {
+  currentProduct = p;
+  document.getElementById('modal-title').innerText = p.name;
+  document.getElementById('modal-desc').innerText = p.description;
+  document.getElementById('modal-img').src = p.images[0];
+  document.getElementById('modal').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.add('hidden');
+}
+
+function exportPDF() {
+  window.print();
+}
+
+render();
+</script>
+
 </body>
 </html>
